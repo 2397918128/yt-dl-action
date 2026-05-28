@@ -83,6 +83,7 @@ jobs:
             yt-dlp \
               $AUDIO_FLAG \
               $COOKIE_FLAG \
+              --remote-components ejs:github \
               --no-playlist \
               --output "downloads/%(title)s.%(ext)s" \
               --restrict-filenames \
