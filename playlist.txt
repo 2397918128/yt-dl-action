@@ -1,0 +1,7 @@
+# YouTube Download Playlist
+# Add video URLs below, one per line.
+# Lines starting with # are ignored.
+# Push to trigger automatic download.
+
+# Example:
+# https://www.youtube.com/watch?v=mpPKsA347dg
