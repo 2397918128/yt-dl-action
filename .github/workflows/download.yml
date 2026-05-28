@@ -40,6 +40,11 @@ jobs:
         run: |
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
+      
+      - name: Verify deno
+        run: |
+          export PATH="$HOME/.deno/bin:$PATH"
+          deno --version
 
       - name: Prepare download list
         id: prepare
@@ -58,6 +63,8 @@ jobs:
         env:
           YT_COOKIES: ${{ secrets.YT_COOKIES }}
         run: |
+          export PATH="$HOME/.deno/bin:$PATH"
+          which deno || echo "deno not found, continuing without JS runtime"
           AUDIO_FLAG=""
           COOKIE_FLAG=""
           if [ "${{ github.event.inputs.audio_only }}" = "true" ]; then
