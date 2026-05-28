@@ -36,6 +36,11 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
 
+      - name: Install deno (JS runtime for yt-dlp)
+        run: |
+          curl -fsSL https://deno.land/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+
       - name: Prepare download list
         id: prepare
         run: |
@@ -50,10 +55,18 @@ jobs:
           echo "URL count: $(grep -cv '^\s*$' /tmp/urls.txt || echo 0)"
 
       - name: Download videos
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
         run: |
           AUDIO_FLAG=""
+          COOKIE_FLAG=""
           if [ "${{ github.event.inputs.audio_only }}" = "true" ]; then
             AUDIO_FLAG="--extract-audio --audio-format mp3 --audio-quality 0"
+          fi
+          if [ -n "$YT_COOKIES" ]; then
+            echo "$YT_COOKIES" > /tmp/cookies.txt
+            COOKIE_FLAG="--cookies /tmp/cookies.txt"
+            echo "Using cookies from secret"
           fi
           
           while IFS= read -r url; do
@@ -62,6 +75,7 @@ jobs:
             echo "Downloading: $url"
             yt-dlp \
               $AUDIO_FLAG \
+              $COOKIE_FLAG \
               --no-playlist \
               --output "downloads/%(title)s.%(ext)s" \
               --restrict-filenames \
